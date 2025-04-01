@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+    <head>
+        <meta charset="UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        
+        <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="crossorigin=""/>
+        <link rel="stylesheet" href="styles.css">
+        
+        <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+
+        <title>Meus Mapas</title>
+    </head>
+    <body>
+        <div class="popup-overlay" id="popup">
+            <div class="popup">
+                <h3>Criar Novo Mapa</h3>
+                <div class="popup-form">
+                    <form id="popupForm" >
+                        <label for="nameInput">Nome:</label>
+                        <input type="text" id="nameInput" name="name" required>
+                        <label for="descriptionInput">Descrição:</label>
+                        <textarea id="descriptionInput" name="description" rows="3" required></textarea>
+                        <hr>
+                        <div class="popup-buttons">
+                            <button id = "cancelAddMap"type="button" class="cancel-button">Cancelar</button>
+                            <button type="submit" class="ok-button">OK</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <div class="container">
+            <header class="header">
+                <img src="imgs/logo.png" alt="Logo" class="logo">
+                <h1>Meus Mapas - Projeto dev Fullstack Básico</h2>
+            </header>
+          </div>
+          <div class="content">
+            <div id="mapTableList">
+                <h3>Listagem dos mapas
+                    <span id="addMapBtn" class="action-btn add-btn">
+                        <img src="imgs\add-icon.png" alt="Adicionar" title="Adicionar">
+                    </span>
+                </h3>
+                <table class="styled-table">
+                    <thead>
+                        <tr>
+                            <th>Nome</th>
+                            <th>Descrição</th>
+                            <th>Quantidade de Pontos</th>
+                            <th>Criado</th>
+                            <th>Atualizado</th>
+                            <th>Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tableElementList">
+                    </tbody>
+                </table>
+            </div>
+            <div id="pointsArea">
+                <h3>
+                    <span id="backMapBtn" class="action-btn add-btn">
+                        <img src="imgs\back-icon.png" alt="Retornar a listagem" title="Retornar a listagem">
+                        <span id="pointsAreaMapName" class="main-text">
+                            NOME MAPA
+                        </span>
+                        <span id="pointsAreaMapDescription" class="sub-text">
+                            DESCRIÇÃO MAPA
+                        </span>
+                    </span>
+                </h3>
+                <div id="innerMap"></div>     
+            </div>
+          </div>
+    </body>
+    <script src="scripts.js"></script>
+</html>
