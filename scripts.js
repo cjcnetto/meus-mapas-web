@@ -1,3 +1,7 @@
+/**
+ * Classe destinada para comunicação com o servidor Flask
+ * @class ServerFetch
+ */
 class ServerFetch{
     constructor(){
         //URL do servidor Flask
@@ -5,6 +9,8 @@ class ServerFetch{
     }
 
     /**
+     * Retorna a lista de mapas do servidor
+     * @async
      * @returns {Promise<Array>} - List of maps
      */
     async getMapList(){
@@ -14,13 +20,25 @@ class ServerFetch{
         const data = await mapsResponse.json();
         return data.maps;
     }
+    /**
+     * Remove um mapa do servidor
+     * @async
+     * @param {number} id 
+     * @returns Nome do mapa
+     */
     async deleteMap(id){
         const mapsResponse = await fetch(this.url + '/map?id=' + id, {
             method: 'delete',
           });
-        //const data = await mapsResponse.json();
-        return;
+        const data = await mapsResponse.json();
+        return data;
     }
+    /**
+     * Adiciona ou atualiza um mapa no servidor
+     * @async
+     * @param {{id: number, name: string, description: string}} data 
+     * @returns 
+     */
     async upsertMap(data){
         const formData = new FormData();
         formData.append('name', data.name);
@@ -35,6 +53,12 @@ class ServerFetch{
         const dataResponse = await mapsResponse.json();
         return dataResponse;
     }
+    /**
+     * Retorna os pontos de um mapa do servidor
+     * @async
+     * @param {number} mapId 
+     * @returns 
+     */
     async getPoints(mapId){
         const pointsResponse = await fetch(this.url + '/points?id=' + mapId, {
             method: 'get',
@@ -42,6 +66,12 @@ class ServerFetch{
         const data = await pointsResponse.json();
         return data;
     }
+    /**
+     * Adiciona ou atualiza um ponto no servidor
+     * @async
+     * @param {{id: number, map_id: number, name: string, description: string, latitude: number, longitude: number}} data 
+     * @returns 
+     */
     async upsertPoint(data){
         const formData = new FormData();
         formData.append('name', data.name);
@@ -59,19 +89,33 @@ class ServerFetch{
         const dataResponse = await mapsResponse.json();
         return dataResponse;
     }
+    /**
+     * Remove um ponto do servidor
+     * @async
+     * @param {number} mapId 
+     * @param {number} pointId 
+     * @returns 
+     */
     async deletePoint(mapId, pointId){
         const mapsResponse = await fetch(`${this.url}/point?id=${pointId}&map_id=${mapId}`, {
             method: 'delete',
           });
-        //const data = await mapsResponse.json();
-        return;
+        const data = await mapsResponse.json();
+        return data;
     }
           
 }
 
-class AddMapElement{
+/**
+ * Classe destinada para criar o popup de adicionar e editar mapas
+ * @class MapListPopupComponent
+ */
+class MapListPopupComponent{
+    /**
+     * @param {Function} upsertFunction 
+     */
     constructor(upsertFunction){
-        this.id = -1;
+        this.id = -1; // Sempre inicia com -1 para indicar que é um novo mapa
         this.popup = document.getElementById('popup');
         this.nameInput = document.getElementById('nameInput');
         this.descriptionInput = document.getElementById('descriptionInput');
@@ -94,10 +138,21 @@ class AddMapElement{
             this.closePopup();
         });
     }
+
+    /**
+     * Função para criar um novo mapa
+     * @returns {void}
+     */
     createMap() {
-        this.editMap(-1, '', '');
+        this.editMap(-1, '', ''); // Chama a função editMap com id -1 para criar um novo mapa
     }
 
+    /**
+     * Função para editar um mapa existente
+     * @param {number} id id do mapa
+     * @param {string} name nome do mapa
+     * @param {string} description 
+     */
     editMap(id, name, description){
         this.id = id;
         this.nameInput.value = name;
@@ -105,40 +160,68 @@ class AddMapElement{
         this.popup.style.visibility = 'visible';
     }
 
-    // Função para fechar o popup
+    /**
+     * Fecha o popup
+     */
     closePopup() {
         this.popup.style.visibility = 'hidden';
     }
-
 }
 
-class MapListTable{
+/**
+ * Classe destinada para representar a CRUD de mapas
+ * @class MapListTableComponent
+ */
+class MapListTableComponent{
+    /**
+     * 
+     * @param {Function} upsertFunction Function para adicionar ou editar o mapa
+     * @param {Function} viewMapFunction Function para visualizar o mapa
+     * @param {Function} deleteFunction Function para remover o mapa
+     */
     constructor(upsertFunction, viewMapFunction, deleteFunction){
         this.viewMapFunction = viewMapFunction;
         this.deleteFunction = deleteFunction;
-        this.addMapElement = new AddMapElement(upsertFunction);
+        this.addMapElement = new MapListPopupComponent(upsertFunction);
         this.mapTable = document.getElementById('mapTableList');
+        this._mapTableContainer = document.getElementById('tableElementList');
         this._addMapBtn = document.getElementById('addMapBtn');
-    
         this._addMapBtn.addEventListener('click', () => {
             this.addMapElement.createMap();
         });
-
-        this._mapTableContainer = document.getElementById('tableElementList');
         this.clearElements();
         this._createEmptyList();
     }
+    /**
+     * Esconde a tabela de mapas
+     * @returns {void}
+     */
     hide(){
         this.mapTable.style.display = 'none';
     }
+    /**
+     * Mostra a tabela de mapas
+     * @returns {void}
+     */
     show(){
         this.mapTable.style.display = 'block';
     }
+    /**
+     * 
+     * @param {any} value 
+     * @param {HTMLElement} row 
+     */
     _insertColumn(value, row){
         const column = document.createElement('td');
         column.innerText = value;
         row.appendChild(column);
     }
+    /**
+     * Cria o botão de ação para editar, remover ou visualizar o mapa
+     * @param {string} src Caminho da imagem do botão
+     * @param {string} title Nome do botão
+     * @returns {HTMLElement}
+     */
     _createActionButton(src, title){
         const btn = document.createElement('span');
         btn.className = 'action-btn';
@@ -149,6 +232,10 @@ class MapListTable{
         img.title = title;
         return btn;
     }
+    /**
+     * Cria uma linha vazia na tabela de mapas
+     * @returns {void}
+     */
     _createEmptyList(){
         const row = document.createElement('tr');
         const column = document.createElement('td');
@@ -157,6 +244,12 @@ class MapListTable{
         row.appendChild(column);
         this._mapTableContainer.appendChild(row);
     }
+    /**
+     * Cria os botões de ação para editar, remover e visualizar o mapa
+     * @param {any} mapElement
+     * @param {HTMLElement} row
+     * @returns {void}
+     */
     _insertActions(mapElement, row){
         const column = document.createElement('td');
         const editButton = this._createActionButton('imgs\\edit-icon.png', 'Editar');
@@ -176,29 +269,41 @@ class MapListTable{
         column.appendChild(viewMapButton);
         row.appendChild(column);
     }
+    /**
+     * Limpa todos os elementos da tabela de mapas
+     * @returns {void}
+     */
     clearElements(){
         const table = this._mapTableContainer;
         while(table.firstChild){
             table.removeChild(table.firstChild);
         }
     }
+    /**
+     * Insere os elementos na tabela de mapas
+     * @param {{name: string, description: string, id: number, creation_date: string, update_date: string, points: number}[]} mapElementList 
+     * @returns {void}
+     */
     insertElements(mapElementList){
         this.clearElements();
         if(mapElementList.length === 0){
             this._createEmptyList();
             return;
         }
-
         mapElementList.forEach((mapElement) => {
             this.insertElement(mapElement);
         });
     }
+    /**
+     * Insere um elemento na tabela de mapas
+     * @param {{name: string, description: string, id: number, creation_date: string, update_date: string, points: number}} mapElement 
+     */
     insertElement(mapElement){
         const table = this._mapTableContainer;
         const row = document.createElement('tr');
         this._insertColumn(mapElement.name, row);
         this._insertColumn(mapElement.description, row);
-        this._insertColumn(0, row);
+        this._insertColumn(mapElement.points, row);
         this._insertColumn(mapElement.creation_date, row);
         this._insertColumn(mapElement.update_date, row);
         this._insertActions(mapElement, row);
@@ -206,7 +311,11 @@ class MapListTable{
     }
 }
 
-
+/**
+ * Classe que extende um controle do Leaflet para criar um botão de ação para criar pontos no mapa
+ * @class CreatePointAction
+ * @extends L.Control
+ */
 L.Control.CreatePointAction = L.Control.extend({
     options: {
         callback: null // Callback que será passado
@@ -237,11 +346,11 @@ L.Control.CreatePointAction = L.Control.extend({
             if(!this.turnedOn){
                 return;
             }
-            options.callback(e.latlng);
+            options.callback(e.latlng); // Chama o callback com a latitude e longitude do ponto clicado
         });
         return div;
     },
-    onRemove: function() {},
+    onRemove: function() {},//Necessário para o Leaflet, mas não faz nada
     disable: function(){
         this.turnedOn = false;
         this.map.getContainer().style.cursor = ''
@@ -249,7 +358,17 @@ L.Control.CreatePointAction = L.Control.extend({
     }
 });
 
+/**
+ * Classe que representa um mapa com suas camadas e seus pontos
+ * @class MapComponent
+ */
 class MapComponent{
+    /**
+     * 
+     * @param {Function} backClick 
+     * @param {Function} upsertPoint 
+     * @param {Function} deletePoint 
+     */
     constructor(backClick, upsertPoint, deletePoint){
         this.upsertPoint = upsertPoint;
         this.deletePoint = deletePoint;
@@ -261,7 +380,8 @@ class MapComponent{
         backButton.onclick = () =>{
             backClick();
         };
-        this.map = L.map('innerMap');
+        this.map = L.map('innerMap'); //Componente do mapa criado pelo leaflet e recebe o id do elemento HTML
+        //Camada de tile do mapa, nesse caso o OpenStreetMap
         L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
             maxZoom: 19,
             attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
@@ -273,21 +393,29 @@ class MapComponent{
                 callback: (latlng)=>{
                     const marker = this._createPoint(
                         {
-                            id: -1, 
+                            id: -1, // id -1 indica que é um novo ponto
                             map_id: this.mapId,
                             name: "Novo Ponto", 
                             description: "Nova descrição", 
                             latitude: latlng.lat, 
                             longitude: latlng.lng
                         });
-                        marker.openPopup();
+                    marker.openPopup();
                 }
             });
         this.map.addControl(this.createPointAction);
     }
+    /**
+     * Esconde o mapa e a área de pontos
+     * @returns {void}
+     */
     hide(){
         this.pointsArea.style.display = 'none';
     }
+    /**
+     * Mostra o mapa e a área de pontos
+     * @returns {void}
+     */
     show(){
         this.pointsArea.style.display = 'block';
         //DEFAULT do rio de janeiro caso não consiga pegar a localização da maquina
@@ -298,6 +426,11 @@ class MapComponent{
         });
         this.createPointAction.disable();
     }
+    /**
+     * Cria um ponto no mapa e adiciona o popup para editar o ponto
+     * @param {{id: number, map_id: number, name: string, description: string, latitude: number, longitude: number}} point 
+     * @returns 
+     */
     _createPoint(point){
         const div = L.DomUtil.create('div', 'point-popup');
         const marker = L.marker([point.latitude, point.longitude]).bindPopup(div);
@@ -350,6 +483,7 @@ class MapComponent{
             marker.closePopup();
         });
 
+        /**Caso seja um ponto existente na base apresentar o botão de remover */
         if(point.id >= 0){
             const removeButton = L.DomUtil.create('button', 'cancel-button', divBtns);
             removeButton.type = "button";
@@ -374,6 +508,12 @@ class MapComponent{
         this.pointLayer.addLayer(marker);
         return marker;
     }
+    /**
+     * Atualiza o mapa com os pontos recebidos do servidor
+     * @param {{map_name: string, map_description: string, points: {id: number, map_id: number, name: string, description: string, latitude: number, longitude: number}[]}} data
+     * @param {number} mapId
+     * @returns {void}
+     */
     updateMap(data, mapId){
         this.mapId = mapId;
         this.pointLayer.clearLayers();
@@ -385,7 +525,10 @@ class MapComponent{
     }
 }
 
-
+/**
+ * Classe que representa a página de mapas possuindo todo o controle sobre os componentes de listagem e edição
+ * @class MyMapPage
+ */
 class MyMapPage{
     constructor(){
         this.serverFetch = new ServerFetch();
@@ -407,7 +550,7 @@ class MyMapPage{
                 this.atualizarMapa(mapId);
             }
         );
-        this.mapTableList = new MapListTable(
+        this.mapTableList = new MapListTableComponent(
             async (data)=>{
                 console.log('UPSERT', data);
                 let action = 'atualizar';
@@ -448,6 +591,9 @@ class MyMapPage{
             }
         );
     }
+    /**
+     * Atualiza a lista de mapas chamando o servidor
+     */
     atualizarListaMapas(){
         this.serverFetch.getMapList().then((mapList) => {
             console.log('MAP LIST', mapList);
@@ -455,6 +601,10 @@ class MyMapPage{
         });
     }
 
+    /**
+     * Atualiza o mapa com os pontos recebidos do servidor
+     * @param {number} mapId 
+     */
     atualizarMapa(mapId){
         this.serverFetch.getPoints(mapId).then((pointsList) => {
             console.log('points list', pointsList);
@@ -462,6 +612,10 @@ class MyMapPage{
         });
     }
 
+    /**
+     * Inicializa a página de mapas
+     * @returns {void}
+     */
     init(){
         this.atualizarListaMapas();
     }
