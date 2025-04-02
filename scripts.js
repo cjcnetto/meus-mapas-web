@@ -17,8 +17,8 @@ class ServerFetch{
         const mapsResponse = await fetch(this.url + '/maps', {
             method: 'get',
           });
-        const data = await mapsResponse.json();
-        return data.maps;
+        const  {maps} = await mapsResponse.json();
+        return maps;
     }
     /**
      * Remove um mapa do servidor
@@ -30,8 +30,7 @@ class ServerFetch{
         const mapsResponse = await fetch(this.url + '/map?id=' + id, {
             method: 'delete',
           });
-        const data = await mapsResponse.json();
-        return data;
+        return await mapsResponse.json();
     }
     /**
      * Adiciona ou atualiza um mapa no servidor
@@ -50,8 +49,7 @@ class ServerFetch{
           method: 'post',
           body: formData
         });
-        const dataResponse = await mapsResponse.json();
-        return dataResponse;
+        return await mapsResponse.json();
     }
     /**
      * Retorna os pontos de um mapa do servidor
@@ -63,8 +61,7 @@ class ServerFetch{
         const pointsResponse = await fetch(this.url + '/points?id=' + mapId, {
             method: 'get',
           });
-        const data = await pointsResponse.json();
-        return data;
+        return await pointsResponse.json();
     }
     /**
      * Adiciona ou atualiza um ponto no servidor
@@ -86,8 +83,7 @@ class ServerFetch{
           method: 'post',
           body: formData
         });
-        const dataResponse = await mapsResponse.json();
-        return dataResponse;
+        return await mapsResponse.json();
     }
     /**
      * Remove um ponto do servidor
@@ -100,8 +96,7 @@ class ServerFetch{
         const mapsResponse = await fetch(`${this.url}/point?id=${pointId}&map_id=${mapId}`, {
             method: 'delete',
           });
-        const data = await mapsResponse.json();
-        return data;
+        return await mapsResponse.json();
     }
           
 }
