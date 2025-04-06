@@ -14,7 +14,7 @@ class ServerFetch{
      * @returns {Promise<Array>} - List of maps
      */
     async getMapList(){
-        const mapsResponse = await fetch(this.url + '/maps', {
+        const mapsResponse = await fetch(`${this.url}/maps`, {
             method: 'get',
           });
         const  {maps} = await mapsResponse.json();
@@ -27,7 +27,7 @@ class ServerFetch{
      * @returns Nome do mapa
      */
     async deleteMap(id){
-        const mapsResponse = await fetch(this.url + '/map?id=' + id, {
+        const mapsResponse = await fetch(`${this.url}/map?id=${id}`, {
             method: 'delete',
           });
         return await mapsResponse.json();
@@ -39,17 +39,23 @@ class ServerFetch{
      * @returns 
      */
     async upsertMap(data){
+        const {id, name, description} = data;
         const formData = new FormData();
-        formData.append('name', data.name);
-        formData.append('id', data.id);
-        formData.append('description', data.description);
+        formData.append('name', name);
+        formData.append('id', id.toString());
+        formData.append('description', description);
       
-        let url = this.url + '/map';
-        const mapsResponse = await fetch(url, {
+        let url = `${this.url}/map`;
+        const response = await fetch(url, {
           method: 'post',
           body: formData
         });
-        return await mapsResponse.json();
+        const responseData = await response.json();
+        if (!response.ok) {
+            const {message} = responseData
+            throw new Error(message);
+        }
+        return responseData;
     }
     /**
      * Retorna os pontos de um mapa do servidor
@@ -58,7 +64,7 @@ class ServerFetch{
      * @returns 
      */
     async getPoints(mapId){
-        const pointsResponse = await fetch(this.url + '/points?id=' + mapId, {
+        const pointsResponse = await fetch(`${this.url}/points?id=${mapId}`, {
             method: 'get',
           });
         return await pointsResponse.json();
@@ -72,13 +78,13 @@ class ServerFetch{
     async upsertPoint(data){
         const formData = new FormData();
         formData.append('name', data.name);
-        formData.append('id', data.id);
+        formData.append('id', data.id.toString());
         formData.append('description', data.description);
-        formData.append('map_id', data.map_id);
-        formData.append('latitude', data.latitude);
-        formData.append('longitude', data.longitude);
+        formData.append('map_id', data.map_id.toString());
+        formData.append('latitude', data.latitude.toString());
+        formData.append('longitude', data.longitude.toString());
       
-        let url = this.url + '/point';
+        let url = `${this.url}/point`;
         const mapsResponse = await fetch(url, {
           method: 'post',
           body: formData
@@ -489,7 +495,7 @@ class MapComponent{
             });
         }
         
-        marker.on('popupclose', (e)=>{
+        marker.on('popupclose', ()=>{
             inputName.value = point.name;
             inputDescription.value = point.description;
             if(point.id === -1){
