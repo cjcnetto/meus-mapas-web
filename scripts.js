@@ -1,4 +1,20 @@
 /**
+ * Função para obter a data e hora local no formato ISO 8601
+ * @returns {string} - Retorna a data e hora local no formato ISO 8601
+ */
+function getLocalDatetimeValue() {
+  const now = new Date();
+  const pad = n => n.toString().padStart(2, '0');
+
+  const year = now.getFullYear();
+  const month = pad(now.getMonth() + 1);
+  const day = pad(now.getDate());
+  const hours = pad(now.getHours());
+  const minutes = pad(now.getMinutes());
+
+  return `${year}-${month}-${day}T${hours}:${minutes}`;
+}
+/**
  * Classe destinada para comunicação com o servidor Flask
  * @class ServerFetch
  */
@@ -72,7 +88,7 @@ class ServerFetch{
     /**
      * Adiciona ou atualiza um ponto no servidor
      * @async
-     * @param {{id: number, map_id: number, name: string, description: string, latitude: number, longitude: number}} data 
+     * @param {{id: number, map_id: number, name: string, description: string, operation_date: Date, shooting_severity: string, latitude: number, longitude: number}} data 
      * @returns 
      */
     async upsertPoint(data){
@@ -80,10 +96,11 @@ class ServerFetch{
         formData.append('name', data.name);
         formData.append('id', data.id.toString());
         formData.append('description', data.description);
+        formData.append('operation_date', data.operation_date);
         formData.append('map_id', data.map_id.toString());
         formData.append('latitude', data.latitude.toString());
         formData.append('longitude', data.longitude.toString());
-      
+        console.log('upsertPoint', data);
         let url = `${this.url}/point`;
         const mapsResponse = await fetch(url, {
           method: 'post',
@@ -398,6 +415,8 @@ class MapComponent{
                             map_id: this.mapId,
                             name: "Novo Ponto", 
                             description: "Nova descrição", 
+                            operation_date: getLocalDatetimeValue(),
+                            shooting_severity: null,
                             latitude: latlng.lat, 
                             longitude: latlng.lng
                         });
@@ -429,7 +448,7 @@ class MapComponent{
     }
     /**
      * Cria um ponto no mapa e adiciona o popup para editar o ponto
-     * @param {{id: number, map_id: number, name: string, description: string, latitude: number, longitude: number}} point 
+     * @param {{id: number, map_id: number, name: string, description: string, operation_date: Date, shooting_severity: string, latitude: number, longitude: number}} point 
      * @returns 
      */
     _createPoint(point){
@@ -449,6 +468,8 @@ class MapComponent{
                 map_id: point.map_id,
                 name: formData.get('name'),
                 description: formData.get('description'),
+                operation_date: formData.get('operation_date'),
+                shooting_severity: point.shooting_severity,
                 latitude: marker.getLatLng().lat,
                 longitude: marker.getLatLng().lng
             };
@@ -474,6 +495,39 @@ class MapComponent{
         inputDescription.name = "description";
         inputDescription.value = point.description;
 
+        const labelOperationDate = L.DomUtil.create('label', '', form);
+        labelOperationDate.setAttribute("for", "operation_date");
+        labelOperationDate.innerText = "Data da operação";
+        
+        const inputOperationDate = L.DomUtil.create('input', '', form);
+        inputOperationDate.id = "operation_date";
+        inputOperationDate.name = "operation_date";
+        inputOperationDate.type = "datetime-local";
+        inputOperationDate.value = point.operation_date;
+    
+        const labelShootingSeverity = L.DomUtil.create('label', '', form);
+        labelShootingSeverity.innerText = "Gravidade do tiroteio";
+
+        const divShootingSeverity = L.DomUtil.create('div', '', form);
+        switch (point.shooting_severity) {
+            case 'Sem vítimas':
+                divShootingSeverity.className = 'shooting_severity_div shooting_severity_sem_vitimas';
+                divShootingSeverity.innerText = 'Sem vítimas';
+                break;
+            case 'Sem mortos':
+                divShootingSeverity.className = 'shooting_severity_div shooting_severity_sem_mortos';
+                divShootingSeverity.innerText = 'Sem mortos';
+                break;
+            case 'Com mortos':
+                divShootingSeverity.className = 'shooting_severity_div shooting_severity_com_mortos';
+                divShootingSeverity.innerText = 'Com mortos';
+                break;
+            default:
+                divShootingSeverity.className = 'shooting_severity_div shooting_severity_none';
+                divShootingSeverity.innerText = 'Sem informação';
+        }
+        
+
         L.DomUtil.create('hr', '', form);
 
         const divBtns = L.DomUtil.create('div', 'popup-buttons', form);
@@ -498,6 +552,7 @@ class MapComponent{
         marker.on('popupclose', ()=>{
             inputName.value = point.name;
             inputDescription.value = point.description;
+            inputOperationDate.value = point.operation_date;
             if(point.id === -1){
                 this.pointLayer.removeLayer(marker);
             }
