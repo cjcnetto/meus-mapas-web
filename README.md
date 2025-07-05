@@ -1,6 +1,6 @@
 # MEUS-MAPAS-WEB
 
-Este é o projeto que se encontra o MVP da disciplina **Desenvolvimento Full Stack Básico** 
+Este é o projeto que se encontra o MVP da disciplina **Desenvolvimento Qualidade de Software, Segurança e Sistemas Inteligentes** esse projeto é uma continuação do projeto do Fullstack Básico.
 
 Tem como objetivo apresentar uma CRUD de mapas uma tela de popup para editar os dados básicos de um mapa assim como criá-los. Existe também a possibilidade de ver o mapa georeferenciado para poder criar pontos, editar e remove-los.
 

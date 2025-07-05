@@ -511,16 +511,19 @@ class MapComponent{
         const divShootingSeverity = L.DomUtil.create('div', '', form);
         switch (point.shooting_severity) {
             case 'Sem vítimas':
+            case 'sem_vitima':
                 divShootingSeverity.className = 'shooting_severity_div shooting_severity_sem_vitimas';
                 divShootingSeverity.innerText = 'Sem vítimas';
                 break;
             case 'Sem mortos':
+            case 'ferido':
                 divShootingSeverity.className = 'shooting_severity_div shooting_severity_sem_mortos';
-                divShootingSeverity.innerText = 'Sem mortos';
+                divShootingSeverity.innerText = 'Pode haver feridos';
                 break;
             case 'Com mortos':
+            case 'mortos':
                 divShootingSeverity.className = 'shooting_severity_div shooting_severity_com_mortos';
-                divShootingSeverity.innerText = 'Com mortos';
+                divShootingSeverity.innerText = 'Pode haver mortos';
                 break;
             default:
                 divShootingSeverity.className = 'shooting_severity_div shooting_severity_none';
