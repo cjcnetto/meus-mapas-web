@@ -17,3 +17,8 @@ Foi pensada a seguinte arquitetura:
 ## Como executar
 
 Basta fazer o download do projeto e abrir o arquivo `index.html` no seu browser.
+
+
+docker build -t meus-mapas-web .
+docker run --rm -p 8080:80 meus-mapas-web
+http://localhost:8080
