@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64" aria-label="Beach icon">
+  <!-- Background circle (marker style) -->
+  <circle cx="32" cy="32" r="30" fill="#EAF6FF" stroke="#2A7BBF" stroke-width="2"/>
+  
+  <!-- Waves -->
+  <path d="M12 42c4 0 6-3 10-3s6 3 10 3 6-3 10-3 6 3 10 3" fill="none" stroke="#2A7BBF" stroke-width="2" stroke-linecap="round"/>
+  <path d="M12 48c4 0 6-3 10-3s6 3 10 3 6-3 10-3 6 3 10 3" fill="none" stroke="#2A7BBF" stroke-width="2" stroke-linecap="round"/>
+
+  <!-- Umbrella pole -->
+  <rect x="31" y="26" width="2" height="16" fill="#6B4E3D" />
+
+  <!-- Umbrella canopy -->
+  <path d="M18 26c7-8 21-8 28 0H18z" fill="#FF5A5F" stroke="#C53A3E" stroke-width="2"/>
+  <path d="M18 26h28" stroke="#C53A3E" stroke-width="2"/>
+
+  <!-- Sand -->
+  <path d="M8 52h48c0 0-6 6-24 6S8 52 8 52z" fill="#F4D58D" />
+</svg>
