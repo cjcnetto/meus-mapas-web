@@ -29,6 +29,13 @@ class MyMapPage{
             async(south, west, north, east)=>{
                 console.log('get beaches in area', south, west, north, east);
                 return await this.serverFetch.getBeaches(south, west, north, east);
+            },
+            async(mapId, pointId)=>{
+                console.log('get weather for point', mapId, pointId);
+                if(pointId === null || pointId === undefined || pointId === -1){
+                    return await this.serverFetch.getWeather(mapId);
+                }
+                return await this.serverFetch.getWeatherForPoint(mapId, pointId);
             }
         );
         this.mapTableList = new MapListTableComponent(

@@ -26,6 +26,29 @@ export default class ServerFetch{
     }
 
     /**
+     * Busca previsão do tempo para todos os pontos de interesse de um mapa
+     * @param {number} mapId 
+     * @returns 
+     */
+    async getWeather(mapId){
+        const response = await fetch(`${this.url}/weather?map_id=${mapId}`, {
+            method: 'get',
+            headers: {'Accept': 'application/json'}
+          });
+        const  data = await response.json();
+        return data;
+    }
+
+    async getWeatherForPoint(mapId, pointId){
+        const response = await fetch(`${this.url}/weather/point?map_id=${mapId}&point_id=${pointId}`, {
+            method: 'get',
+            headers: {'Accept': 'application/json'}
+          });
+        const  data = await response.json();
+        return data;
+    }
+
+    /**
      * Retorna a lista de mapas do servidor
      * @async
      * @returns {Promise<Array>} - List of maps

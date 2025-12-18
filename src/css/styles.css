@@ -203,24 +203,18 @@ form textarea {
     width: 40px;
     height: 40px;
 }
-.shooting_severity_div{
-    display: flex;
-    justify-content: center;
-    color: white;
-    align-items: center;
-    width: 100%;
-    height: 100%;
-}
-.shooting_severity_sem_vitimas{
-    background-color: greenyellow
-}
-.shooting_severity_sem_mortos{
-    background-color: red
-}
-.shooting_severity_com_mortos{
-    background-color: darkred;
-}
+    .svg-marker {
+      position: relative;
+      width: 32px;
+      height: 48px;
+      background-image: url('../assets/map-icons/weather-pin.svg');
+      background-size: cover;
+    }
 
-.shooting_severity_none{
-    background-color: black;
-}
+    .svg-overlay {
+      position: absolute;
+      top: 8px;
+      left: 8px;
+      width: 16px;
+      height: 16px;
+    }

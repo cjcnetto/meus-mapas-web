@@ -1,0 +1,27 @@
+<svg width="64" height="64" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Nublado à noite">
+  <!-- Lua parcialmente encoberta -->
+  <path d="M40 32
+           a16 16 0 1 1 -16 -16
+           a12 12 0 1 0 16 16z"
+        fill="#F4E1C1" opacity="0.6"/>
+
+  <!-- Nuvem principal -->
+  <g transform="translate(12,28)">
+    <path d="M0 12
+             a12 12 0 0 1 12-12
+             a14 14 0 0 1 26 6
+             h6 a10 10 0 0 1 0 20
+             h-40 a10 10 0 0 1 -4-14z"
+          fill="#C0C0C0" stroke="#999999" stroke-width="1"/>
+  </g>
+
+  <!-- Nuvem secundária para reforçar o aspecto nublado -->
+  <g transform="translate(24,40)">
+    <path d="M0 8
+             a8 8 0 0 1 8-8
+             a10 10 0 0 1 18 4
+             h4 a7 7 0 0 1 0 14
+             h-26 a7 7 0 0 1 -4-10z"
+          fill="#B0B0B0" stroke="#808080" stroke-width="1"/>
+  </g>
+</svg>

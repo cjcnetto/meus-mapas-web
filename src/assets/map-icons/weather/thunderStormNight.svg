@@ -1,0 +1,26 @@
+<svg width="64" height="64" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Tempestade com trovões à noite">
+  <!-- Lua crescente difusa -->
+  <path d="M40 28
+           a16 16 0 1 1 -16 -16
+           a12 12 0 1 0 16 16z"
+        fill="#F4E1C1" opacity="0.4"/>
+
+  <!-- Nuvem densa -->
+  <g transform="translate(16,28)">
+    <path d="M0 12
+             a12 12 0 0 1 12-12
+             a14 14 0 0 1 26 6
+             h6 a10 10 0 0 1 0 20
+             h-40 a10 10 0 0 1 -4-14z"
+          fill="#A0A0A0" stroke="#606060" stroke-width="1"/>
+  </g>
+
+  <!-- Raio -->
+  <polygon points="30,46 36,46 32,54 38,54 28,66 32,56 26,56" fill="#FFD700"/>
+
+  <!-- Gotas de chuva -->
+  <g fill="#1F78B4">
+    <ellipse cx="22" cy="54" rx="2" ry="6"/>
+    <ellipse cx="40" cy="54" rx="2" ry="6"/>
+  </g>
+</svg>

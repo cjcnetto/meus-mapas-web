@@ -1,4 +1,5 @@
 import BeachLayerProvider from './layers/BeachLayerProvider.js';
+import PointOfInterestLayerProvider from './layers/PointOfInterestLayerProvider.js';
 
 /**
  * Classe que extende um controle do Leaflet para criar um botão de ação para criar pontos no mapa
@@ -59,15 +60,15 @@ export default class MapComponent{
      * @param {Function} upsertPoint 
      * @param {Function} deletePoint 
      * @param {Function} getBeaches
+     * @param {Function} weatherFunction
      */
-    constructor(backClick, upsertPoint, deletePoint, getBeaches){
+    constructor(backClick, upsertPoint, deletePoint, getBeaches, weatherFunction){
         this.upsertPoint = upsertPoint;
         this.deletePoint = deletePoint;
         this.pointsArea = document.getElementById('pointsArea');
         this.mapNameSpan = document.getElementById('pointsAreaMapName');
         this.mapDescriptionSpan = document.getElementById('pointsAreaMapDescription');
-        this.pointLayer = L.featureGroup([]);
-        
+        this.weatherControl
         const backButton = document.getElementById('backMapBtn');
         backButton.onclick = () =>{
             backClick();
@@ -78,17 +79,14 @@ export default class MapComponent{
             maxZoom: 19,
             attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
         }).addTo(this.map);
-        const beachLayerProvider = new BeachLayerProvider(this.map, getBeaches);
-
-        this.map.addLayer(this.pointLayer);
-        
-        
+        //const beachLayerProvider = new BeachLayerProvider(this.map, getBeaches);
+        this.pointOfInterestLayerProvider = new PointOfInterestLayerProvider(this.map, weatherFunction, upsertPoint, deletePoint);
 
         this.createPointAction = new L.Control.CreatePointAction(
             { 
                 position: 'topright',
-                callback: (latlng)=>{
-                    const marker = this._createPoint(
+                callback: async (latlng)=>{
+                    const marker = await this.pointOfInterestLayerProvider.createPoint(
                         {
                             id: -1, // id -1 indica que é um novo ponto
                             map_id: this.mapId,
@@ -124,88 +122,7 @@ export default class MapComponent{
         });
         this.createPointAction.disable();
     }
-    /**
-     * Cria um ponto no mapa e adiciona o popup para editar o ponto
-     * @param {{id: number, map_id: number, name: string, description: string, latitude: number, longitude: number}} point 
-     * @returns 
-     */
-    _createPoint(point){
-        const div = L.DomUtil.create('div', 'point-popup');
-        const marker = L.marker([point.latitude, point.longitude]).bindPopup(div);
-        marker.feature = {
-            properties: {
-                pointOfInterest: point
-            }
-        }
-        const form = L.DomUtil.create('form', '', div);
-        L.DomEvent.on(form, 'submit', (event)=>{
-            event.preventDefault(); // Previne recarregamento da página
-            const formData = new FormData(form);
-            const data = {
-                id: point.id,
-                map_id: point.map_id,
-                name: formData.get('name'),
-                description: formData.get('description'),
-                latitude: marker.getLatLng().lat,
-                longitude: marker.getLatLng().lng
-            };
-            console.log('Dados enviados:', data); // Mostra os dados no console
-            this.upsertPoint(data);
-        });
-        const labelName = L.DomUtil.create('label', '', form);
-        labelName.setAttribute("for", "name");
-        labelName.innerText = "Nome";
-        
-        const inputName = L.DomUtil.create('input', '', form);
-        inputName.setAttribute("name", "name");
-        inputName.id = "name";
-        inputName.value = point.name;
-
-        const labelDescription = L.DomUtil.create('label', '', form);
-        labelDescription.setAttribute("for", "description");
-        labelDescription.innerText = "Descrição";
-
-        const inputDescription = L.DomUtil.create('textarea', '', form);
-        inputDescription.rows = 3;
-        inputDescription.id = "description";
-        inputDescription.name = "description";
-        inputDescription.value = point.description;
-        
-        L.DomUtil.create('hr', '', form);
-
-        const divBtns = L.DomUtil.create('div', 'popup-buttons', form);
-        const cancelButton = L.DomUtil.create('button', 'cancel-button', divBtns);
-        cancelButton.type = "button";
-        cancelButton.innerText = "Cancelar";
-        L.DomEvent.on(cancelButton, 'click', ()=>{
-            marker.closePopup();
-        });
-
-        /**Caso seja um ponto existente na base apresentar o botão de remover */
-        if(point.id >= 0){
-            const removeButton = L.DomUtil.create('button', 'cancel-button', divBtns);
-            removeButton.type = "button";
-            removeButton.innerText = "Remover";
-            L.DomEvent.on(removeButton, 'click', ()=>{
-                this.deletePoint(point.map_id, point.id)
-                marker.closePopup();
-            });
-        }
-        
-        marker.on('popupclose', ()=>{
-            inputName.value = point.name;
-            inputDescription.value = point.description;
-            if(point.id === -1){
-                this.pointLayer.removeLayer(marker);
-            }
-        });
-        const okButton = L.DomUtil.create('button', 'ok-button', divBtns);
-        okButton.type = "submit";
-        okButton.innerText = "Salvar";
-
-        this.pointLayer.addLayer(marker);
-        return marker;
-    }
+    
     /**
      * Atualiza o mapa com os pontos recebidos do servidor
      * @param {{map_name: string, map_description: string, points: {id: number, map_id: number, name: string, description: string, latitude: number, longitude: number}[]}} data
@@ -214,11 +131,8 @@ export default class MapComponent{
      */
     updateMap(data, mapId){
         this.mapId = mapId;
-        this.pointLayer.clearLayers();
         this.mapNameSpan.innerText = data.map_name;
         this.mapDescriptionSpan.innerText = data.map_description;
-        data.points.forEach((point)=>{
-            this._createPoint(point);
-        });
+        this.pointOfInterestLayerProvider.updateLayer(mapId, data.points);
     }
 }

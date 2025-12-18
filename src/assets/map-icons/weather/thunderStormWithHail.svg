@@ -1,0 +1,29 @@
+<svg width="64" height="64" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Tempestade com granizo durante o dia">
+  <!-- Sol difuso -->
+  <circle cx="32" cy="16" r="10" fill="#FDB813" opacity="0.4"/>
+
+  <!-- Nuvem densa -->
+  <g transform="translate(16,24)">
+    <path d="M0 12
+             a12 12 0 0 1 12-12
+             a14 14 0 0 1 26 6
+             h6 a10 10 0 0 1 0 20
+             h-40 a10 10 0 0 1 -4-14z"
+          fill="#A0A0A0" stroke="#606060" stroke-width="1"/>
+  </g>
+
+  <!-- Raio -->
+  <polygon points="30,44 36,44 32,52 38,52 28,64 32,54 26,54" fill="#FFD700"/>
+
+  <!-- Gotas de chuva -->
+  <g fill="#1F78B4">
+    <ellipse cx="22" cy="52" rx="2" ry="6"/>
+    <ellipse cx="40" cy="52" rx="2" ry="6"/>
+  </g>
+
+  <!-- Granizo -->
+  <g fill="#6EC1E4">
+    <circle cx="28" cy="58" r="3"/>
+    <circle cx="36" cy="60" r="3"/>
+  </g>
+</svg>

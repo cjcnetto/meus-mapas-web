@@ -1,0 +1,24 @@
+<svg width="64" height="64" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Parcialmente nublado à noite">
+  <!-- Lua crescente -->
+  <path d="M40 32
+           a16 16 0 1 1 -16 -16
+           a12 12 0 1 0 16 16z"
+        fill="#F4E1C1" />
+
+  <!-- Estrelas -->
+  <g fill="#FFD700">
+    <circle cx="18" cy="18" r="2"/>
+    <circle cx="48" cy="22" r="2"/>
+    <circle cx="24" cy="44" r="2"/>
+  </g>
+
+  <!-- Nuvem cobrindo parcialmente a lua -->
+  <g transform="translate(20,32)">
+    <path d="M-4 8
+             a8 8 0 0 1 8-8
+             a10 10 0 0 1 18 4
+             h4 a7 7 0 0 1 0 14
+             h-26 a7 7 0 0 1 -4-10z"
+          fill="#FFFFFF" stroke="#E0E6EF" stroke-width="1"/>
+  </g>
+</svg>

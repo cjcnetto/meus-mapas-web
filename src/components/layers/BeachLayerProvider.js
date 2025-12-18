@@ -32,7 +32,7 @@ export default class BeachLayerProvider {
             const bounds = this.map.getBounds();
             console.log('Map moved, getting beaches in area', bounds);
             const beachIcon = L.icon({
-                iconUrl: '/src/assets/map-icons/beach.svg',
+                iconUrl: '../src/assets/map-icons/beach.svg',
                 iconSize: [32, 32],
             });
             const beachColor = '#a3ff33ff';
