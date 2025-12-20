@@ -39,7 +39,7 @@ export default class PointOfInterestLayerProvider {
             const isDay = weather.current_weather.is_day;
             weatherIcon = weatherData[weatherCode][isDay ? "day" : "night"].image;
             weatheDesc = weatherData[weatherCode][isDay ? "day" : "night"].description;
-            icon = await this.createWeatherIcon(weatherIcon, isDay);
+            icon = await this.createWeatherIcon(weatherIcon, isDay, point.point_type === 1);
         }
         
         const marker = L.marker([point.latitude, point.longitude], {icon: icon}).bindPopup(div);
@@ -75,7 +75,10 @@ export default class PointOfInterestLayerProvider {
             sunSpan.innerText = ` Nascer do Sol: ${sunriseDate} / Pôr do Sol: ${sunsetDate}`;
 
         }
-
+        const hr = L.DomUtil.create('hr', '', div);
+        const pointType = point.point_type === 1 ? 'Praia' : 'Ponto de Interesse';
+        const h3 = L.DomUtil.create('h3', '', div);
+        h3.innerText = `${pointType}`;
         const form = L.DomUtil.create('form', '', div);
         L.DomEvent.on(form, 'submit', (event)=>{
             event.preventDefault(); // Previne recarregamento da página
@@ -154,7 +157,7 @@ export default class PointOfInterestLayerProvider {
         });
     }
 
-    async  createWeatherIcon(url, isDay) {
+    async  createWeatherIcon(url, isDay, sand = false) {
         const response = await fetch(url);
         const text = await response.text();
 
@@ -167,12 +170,40 @@ export default class PointOfInterestLayerProvider {
         } else {
             color = '#483D8B';
         }
+        let inner2 = '';
+        if(sand){
+        inner2 = `
+                <!-- Areia cobrindo a parte inferior -->
+                <path d="
+                    M 4 44
+                    Q 16 38, 32 42
+                    T 60 44
+                    L 60 64
+                    L 4 64
+                    Z"
+                    fill="#D9C08C"
+                />
+
+                <!-- Pequenas ondulações na areia (opcional, deixa mais bonito) -->
+                <path d="
+                    M 10 50
+                    Q 18 48, 26 50
+                    T 42 50
+                    T 54 50"
+                    stroke="#C4A974"
+                    stroke-width="2"
+                    fill="none"
+                    stroke-linecap="round"
+                />
+                `;
+        }
 
         const baseSVG = `
             <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64" aria-label="Beach icon">
             <!-- Background circle (marker style) -->
             <circle cx="32" cy="32" r="30" fill="${color}" stroke="#2A7BBF" stroke-width="2"/>
             ${inner}
+            ${inner2}
             </svg>
         `;
 

@@ -85,6 +85,17 @@ export default class BeachLayerProvider {
                 const okButton = L.DomUtil.create('button', 'ok-button', divBtns);
                 okButton.type = "button";
                 okButton.innerText = "Criar Ponto";
+                let latitude = 0;
+                let longitude = 0;
+                if(layer.feature.geometry.type === 'Point'){
+                    latitude = layer.feature.geometry.coordinates[1];
+                    longitude = layer.feature.geometry.coordinates[0];
+                }else{
+                    const center = layer.getBounds().getCenter();
+                    latitude = center.lat;
+                    longitude = center.lng;
+                }
+
                 okButton.onclick = () => {
                     const data = {
                         id: -1,
@@ -92,8 +103,8 @@ export default class BeachLayerProvider {
                         name: name,
                         description: '',
                         point_type: 1,
-                        latitude: layer.getCenter().lat,
-                        longitude: layer.getCenter().lng
+                        latitude: latitude,
+                        longitude: longitude
                     };
                     this.layer.closePopup();
                     this.upsertPoint(data);
