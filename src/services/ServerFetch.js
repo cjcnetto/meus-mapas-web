@@ -17,12 +17,12 @@ export default class ServerFetch{
      * @returns 
      */
     async getBeaches(south, west, north, east){
-        const response = await fetch(`${this.url}/beaches?south=${south}&west=${west}&north=${north}&east=${east}`, {
-            method: 'get',
-            headers: {'Accept': 'application/json'}
-          });
-        const  data = await response.json();
-        return data;
+      const response = await fetch(`${this.url}/beaches?south=${south}&west=${west}&north=${north}&east=${east}`, {
+          method: 'get',
+          headers: {'Accept': 'application/json'}
+      });
+      const  data = await response.json();
+      return data;
     }
 
     /**
@@ -120,6 +120,10 @@ export default class ServerFetch{
         const formData = new FormData();
         formData.append('name', data.name);
         formData.append('id', data.id.toString());
+        if(!data.point_type){
+            data.point_type = 0;
+        }
+        formData.append('point_type', data.point_type);
         formData.append('description', data.description);
         formData.append('map_id', data.map_id.toString());
         formData.append('latitude', data.latitude.toString());

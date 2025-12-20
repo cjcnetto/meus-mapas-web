@@ -79,7 +79,7 @@ export default class MapComponent{
             maxZoom: 19,
             attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
         }).addTo(this.map);
-        //const beachLayerProvider = new BeachLayerProvider(this.map, getBeaches);
+        this.beachLayerProvider = new BeachLayerProvider(this.map, getBeaches, upsertPoint);
         this.pointOfInterestLayerProvider = new PointOfInterestLayerProvider(this.map, weatherFunction, upsertPoint, deletePoint);
 
         this.createPointAction = new L.Control.CreatePointAction(
@@ -133,6 +133,7 @@ export default class MapComponent{
         this.mapId = mapId;
         this.mapNameSpan.innerText = data.map_name;
         this.mapDescriptionSpan.innerText = data.map_description;
+        this.beachLayerProvider.setMapId(mapId);
         this.pointOfInterestLayerProvider.updateLayer(mapId, data.points);
     }
 }

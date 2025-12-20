@@ -218,3 +218,40 @@ form textarea {
       width: 16px;
       height: 16px;
     }
+
+    .weather-title {
+      font-size: 14px;
+      font-family: "Arial", serif;
+      color: #333;
+      margin-bottom: 5px;
+    }
+
+    .weather-info {
+      font-size: 10px;
+      font-family: "Arial", serif;
+      color: black;
+      text-align: center;
+    }
+
+    .weather-icon {
+      width: 64px;
+      height: 64px;
+    }
+
+    .temperature {
+        top: -5px;
+        padding-left: 10px;
+        padding-right: 5px;
+        align-items: top;
+        font-size: 25px;
+        font-weight: bold;
+    }
+
+    .temperature-range {
+        font-size: 10px;
+        color: #555;
+    }
+    .sun-time {
+        font-size: 14px;
+        color: #555;
+    }

@@ -8,29 +8,34 @@ export default class BeachLayerProvider {
      * @param {L.Map} map 
      * @param {Function} getBeaches
      */
-    constructor(map, getBeaches) {
+    constructor(map, getBeaches, upsertPoint) {
         this.map = map;
+        this.mapId = null;
+        this.upsertPoint = upsertPoint;
         this.layer = L.layerGroup();
         this.currentAbort = null;
-        this.inflight = false;
-
+        let moves = 0;
         map.addLayer(this.layer);
         this.map.on("moveend", () => {
-            this.debounce(this.getBeachesInView(getBeaches), 500, { leading: false, trailing: true });
+            if(this.map.getZoom() <= 11){
+                this.layer.clearLayers();
+                return;
+            }
+            moves++;
+            if(moves == 1){
+                this.getBeachesInView(getBeaches)
+                .finally(() => moves = 0);
+            }
         });
     }
 
-    async getBeachesInView(getBeaches) {
-        console.log('inflght', this.inflight);
-        if (this.inflight && this.currentAbort) {
-            this.currentAbort.abort(); // cancela requisição anterior
-        }
+    setMapId(mapId){
+        this.mapId = mapId;
+    }
 
-        this.currentAbort = new AbortController();
-        this.inflight = true;
+    async getBeachesInView(getBeaches) {    
         try{
             const bounds = this.map.getBounds();
-            console.log('Map moved, getting beaches in area', bounds);
             const beachIcon = L.icon({
                 iconUrl: '../src/assets/map-icons/beach.svg',
                 iconSize: [32, 32],
@@ -41,10 +46,14 @@ export default class BeachLayerProvider {
                 bounds.getWest(), 
                 bounds.getNorth(), 
                 bounds.getEast());
+            if(!beaches){
+                return;
+            }
             this.layer.clearLayers();
+            console.log('BEACHES:', beaches);
             L.geoJSON(beaches, {
-            pointToLayer: (feature, latlng) => L.marker(latlng, { icon: beachIcon }),
-            style: (feature) => ({ color: beachColor })
+            pointToLayer: (_, latlng) => L.marker(latlng, { icon: beachIcon }),
+            style: (_) => ({ color: beachColor })
             }).bindPopup((layer) => {
                 const div = document.createElement('div');
                 const name = layer.feature.properties.name;
@@ -71,24 +80,29 @@ export default class BeachLayerProvider {
                     div.appendChild(accessP);
                 }
 
-
+                L.DomUtil.create('hr', '', div);
+                const divBtns = L.DomUtil.create('div', 'popup-buttons', div);
+                const okButton = L.DomUtil.create('button', 'ok-button', divBtns);
+                okButton.type = "button";
+                okButton.innerText = "Criar Ponto";
+                okButton.onclick = () => {
+                    const data = {
+                        id: -1,
+                        map_id: this.mapId,
+                        name: name,
+                        description: '',
+                        point_type: 1,
+                        latitude: layer.getCenter().lat,
+                        longitude: layer.getCenter().lng
+                    };
+                    this.layer.closePopup();
+                    this.upsertPoint(data);
+                };
                 return div;
             }).addTo(this.layer);
         }
         catch(error){
-           if (error.name !== 'AbortError') {
-            console.error('Erro ao buscar praias:', error);
-           }
-        }finally{
-            this.inflight = false;
+           console.error('Error fetching beaches:', error);
         }
-    }    
-    debounce(fn, delay) {
-    let timeout;
-    console.log('Debounce called');
-    return function(...args) {
-            clearTimeout(timeout);
-            timeout = setTimeout(() => fn.apply(this, args), delay);
-        };
     }
 }

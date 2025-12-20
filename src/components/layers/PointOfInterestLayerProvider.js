@@ -39,7 +39,7 @@ export default class PointOfInterestLayerProvider {
             const isDay = weather.current_weather.is_day;
             weatherIcon = weatherData[weatherCode][isDay ? "day" : "night"].image;
             weatheDesc = weatherData[weatherCode][isDay ? "day" : "night"].description;
-            icon = await this.createWeatherIcon(weatherIcon);
+            icon = await this.createWeatherIcon(weatherIcon, isDay);
         }
         
         const marker = L.marker([point.latitude, point.longitude], {icon: icon}).bindPopup(div);
@@ -49,6 +49,18 @@ export default class PointOfInterestLayerProvider {
             }
         }
         if(weather){
+
+            const local = {
+                hour: '2-digit',
+                minute: '2-digit'
+            };
+            const sunrise  = weather.daily[0].sunrise;
+            const sunset  = weather.daily[0].sunset;
+            const sunriseDate = new Date(sunrise).toLocaleTimeString('pt-BR', local);
+            const sunsetDate = new Date(sunset).toLocaleTimeString('pt-BR', local);
+            const weatherTitle = L.DomUtil.create('h4', 'weather-title', div);
+            weatherTitle.innerText = `Condições Climáticas Atual: ${weatheDesc}`;
+
             const weatherDiv = L.DomUtil.create('div', 'weather-info', div);
             const weatherImg = L.DomUtil.create('img', 'weather-icon', weatherDiv);
             weatherImg.src = weatherIcon;
@@ -57,11 +69,10 @@ export default class PointOfInterestLayerProvider {
             const maxTemp = weather.daily[0].temperature_max;
             const minTemp = weather.daily[0].temperature_min;
             const rangeSpan = L.DomUtil.create('span', 'temperature-range', weatherDiv);
-            rangeSpan.innerText = ` (Min: ${minTemp} °C / Max: ${maxTemp} °C)`;
-            const sunrise  = weather.daily[0].sunrise;
-            const sunset  = weather.daily[0].sunset;
+            rangeSpan.innerHTML = ` (Min: <b>${minTemp} °C</b> / Max: <b>${maxTemp} °C</b>)`;
+            
             const sunSpan = L.DomUtil.create('span', 'sun-time', weatherDiv);
-            sunSpan.innerText = ` (Sunrise: ${new Date(sunrise).toLocaleTimeString()} / Sunset: ${new Date(sunset).toLocaleTimeString()})`;
+            sunSpan.innerText = ` Nascer do Sol: ${sunriseDate} / Pôr do Sol: ${sunsetDate}`;
 
         }
 
@@ -137,38 +148,37 @@ export default class PointOfInterestLayerProvider {
     async updateLayer(mapId, points) {
         this.mapId = mapId;
         this.layer.clearLayers();
-        console.log(this.weatherFuncion);
         this.wetherForecast = await this.weatherFuncion(mapId);
         points.forEach((point)=>{
             this.createPoint(point);
         });
     }
 
-    // Função utilitária para criar um ícone Leaflet com base no pin + SVG externo
-    async  createWeatherIcon(url) {
+    async  createWeatherIcon(url, isDay) {
         const response = await fetch(url);
         const text = await response.text();
 
         const parser = new DOMParser();
         const doc = parser.parseFromString(text, "image/svg+xml");
         const inner = doc.documentElement.innerHTML; // pega só os <path>, <circle>, etc
+        let color = '#ffffff';
+        if(isDay){
+            color = '#6A5ACD';
+        } else {
+            color = '#483D8B';
+        }
 
         const baseSVG = `
             <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64" aria-label="Beach icon">
             <!-- Background circle (marker style) -->
-            <circle cx="32" cy="32" r="30" fill="#0a0a0aff" stroke="#2A7BBF" stroke-width="2"/>
+            <circle cx="32" cy="32" r="30" fill="${color}" stroke="#2A7BBF" stroke-width="2"/>
             ${inner}
             </svg>
         `;
 
-        // Cria o ícone Leaflet
         return L.icon({
             iconUrl: 'data:image/svg+xml;utf8,' + encodeURIComponent(baseSVG),
             iconSize: [32, 32],
         });
-    }
-
-    createFormPoint(){
-        
     }
 }
