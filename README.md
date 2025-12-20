@@ -4,7 +4,7 @@ Este é o projeto que se encontra o MVP da disciplina  **Arquitetura de Software
 esse projeto é uma continuação do projeto do Fullstack Básico.
 
 ## Objetivo
-Tem como objetivo apresentar uma CRUD de mapas uma tela de popup para editar os dados básicos de um mapa assim como criá-los. Existe também a possibilidade de ver o mapa georeferenciado para poder criar pontos, editar e remove-los. Os pontos criados tem sua previsão do tempo devidamente atualizada, no mapa também é possivel visualizar as praias visiveis do mapa.
+Tem como objetivo apresentar uma CRUD de mapas uma tela de popup para editar os dados básicos de um mapa assim como criá-los. Existe também a possibilidade de ver o mapa georeferenciado para poder criar pontos, editar e remove-los. Os pontos criados tem sua previsão do tempo devidamente atualizada, no mapa também é possivel visualizar as praias visiveis do mapa e definir pontos de interesse a partir das mesmas.
 
 ## Aquitetura
 
@@ -23,13 +23,13 @@ Tem como objetivo apresentar uma CRUD de mapas uma tela de popup para editar os 
 ### Biblioteca Java Script utilizada: 
 - **[Leaflet](https://leafletjs.com/)** -> Para desenho dos mapas e tratamento dos pontos.
 
-## API Back End
-- [meus-mapas-api](https://github.com/cjcnetto/meus-mapas-api) -> Projeto Back End que fornece a API RESTful para a aplicação web.
-
 ### Esquemático da Arquitetura
 
 ![Esquemático Arquitetura](docs/architecture.drawio.svg)
 
+
+## API Back End
+- [meus-mapas-api](https://github.com/cjcnetto/meus-mapas-api) -> Projeto Back End que fornece a API RESTful para a aplicação web.
 
 ## Como executar
 1. Clone o repositório:
