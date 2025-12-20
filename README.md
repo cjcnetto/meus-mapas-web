@@ -26,7 +26,10 @@ Tem como objetivo apresentar uma CRUD de mapas uma tela de popup para editar os 
 ## API Back End
 - [meus-mapas-api](https://github.com/cjcnetto/meus-mapas-api) -> Projeto Back End que fornece a API RESTful para a aplicação web.
 
-[INSERIR IMAGEM DA AQRUITETURA AQUI]  
+### Esquemático da Arquitetura
+
+![Esquemático Arquitetura](docs/architecture.drawio.svg)
+
 
 ## Como executar
 1. Clone o repositório:
